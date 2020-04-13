@@ -14,6 +14,7 @@ var gOrmDB sync.Map
 type gOrm struct {
 	db         *gorm.DB
 	redisCache GOrmRedisCache
+	logger     *gOrmLogger
 }
 
 type gOrmOptions struct {
@@ -158,8 +159,8 @@ func gOrmRegister(name string, db *gorm.DB, plugin GOrmRedisCache) {
 }
 
 func GOrmDB(name string) *gorm.DB {
-	if db, ok := gOrmDB.Load(name); ok && db != nil {
-		return db.(*gOrm).db
+	if i, ok := gOrmDB.Load(name); ok && i != nil {
+		return i.(*gOrm).db
 	}
 	return nil
 }
