@@ -50,7 +50,11 @@ func (s *GOrmDBTimeSharding) TableName(t GOrmTimeSharding) string {
 }
 
 func TableName(t GOrmTimeSharding) string {
-	return t.OrgName() + "_" + time.Now().Format(t.Sharding())
+	tableName := t.OrgName()
+	if t.Sharding() != "" {
+		tableName += "_" + time.Now().Format(t.Sharding())
+	}
+	return tableName
 }
 
 func (s *GOrmDBTimeSharding) createSharding(t GOrmTimeSharding) (err error) {
