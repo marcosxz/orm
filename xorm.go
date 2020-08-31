@@ -2,11 +2,12 @@ package orm
 
 import (
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/xorm"
 	"io"
 	"sync"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"xorm.io/core"
 )
 
@@ -44,6 +45,7 @@ type xOrmOption struct {
 	charset            string
 	cascade            bool // 级联
 	sync               []interface{}
+	sync2              []interface{}
 	mapper             core.IMapper
 	tableMapper        core.IMapper
 	columnMapper       core.IMapper
@@ -171,6 +173,12 @@ func XOrmSync(beans ...interface{}) XOrmOption {
 	}
 }
 
+func XOrmSync2(beans ...interface{}) XOrmOption {
+	return func(option *xOrmOption) {
+		option.sync2 = beans
+	}
+}
+
 func XOrmMapper(mapper core.IMapper) XOrmOption {
 	return func(option *xOrmOption) {
 		option.mapper = mapper
@@ -276,6 +284,11 @@ func setXOrmEngineOptions(engine *xorm.Engine, opts *xOrmOption) error {
 	}
 	if len(opts.sync) > 0 {
 		if err := engine.Sync(opts.sync...); err != nil {
+			return err
+		}
+	}
+	if len(opts.sync2) > 0 {
+		if err := engine.Sync2(opts.sync2...); err != nil {
 			return err
 		}
 	}
